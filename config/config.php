@@ -3,7 +3,7 @@
 $host = 'localhost';
 $dbname = 'wireguard_manager';
 $username = 'root';
-$password = 'G@briel2006§';
+$password = 'password';
 
 try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password, [

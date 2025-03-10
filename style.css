@@ -1,0 +1,90 @@
+/* Style général */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+    margin: 0;
+    padding: 20px;
+    text-align: center;
+}
+
+h1 {
+    color: #333;
+    margin-bottom: 20px;
+}
+
+/* Style du tableau */
+table {
+    width: 90%;
+    margin: 20px auto;
+    border-collapse: collapse;
+    background: white;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+th, td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: center;
+}
+
+th {
+    background-color: #007BFF;
+    color: white;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+tr:hover {
+    background-color: #e9ecef;
+}
+
+/* Clé publique avec icône */
+.public-key {
+    font-family: monospace;
+    font-size: 14px;
+    color: #444;
+}
+
+.key-icon {
+    margin-right: 5px;
+    color: #007BFF;
+    font-size: 16px;
+}
+
+/* Cases à cocher */
+input[type="checkbox"] {
+    transform: scale(1.2);
+    margin-right: 10px;
+}
+
+/* Boutons */
+.actions {
+    margin-top: 20px;
+}
+
+.export-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    border-radius: 8px;
+    transition: 0.3s;
+    background-color: #17a2b8;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.export-btn:hover {
+    transform: scale(1.05);
+    opacity: 0.9;
+}

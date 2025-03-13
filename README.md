@@ -120,8 +120,9 @@ Ouvre config.php et assure-toi que les informations MySQL sont correctes :
 
 🚀 Utilisation
 Ouvre le site web depuis ton navigateur :
+``
 http://ip-de-ton-serveur/wireguard-manager/
-
+``
 Depuis l’interface :
 
 Ajouter un client

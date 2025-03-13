@@ -78,13 +78,19 @@ Vérifier si Apache fonctionne :
 1.	Ouvre un terminal sur ton Raspberry Pi.
 2.	Place-toi dans le répertoire où tu veux stocker le projet : 
 
-```cd /var/www/html```
+```
+cd /var/www/html
+```
 
 3.	Clone le dépôt: 
-```git clone https://github.com/koops61/wireguard-manager.git```
+```
+git clone https://github.com/koops61/wireguard-manager.git
+```
 
-4.	Entre dans le dossier du projet : 
-```cd wireguard-manager```
+5.	Entre dans le dossier du projet : 
+```
+cd wireguard-manager
+```
 
 🎯 Configurer les permissions
 Pour que le serveur web (Apache ou Nginx) puisse accéder aux fichiers :
@@ -96,12 +102,18 @@ sudo chmod -R 755 /var/www/html/wireguard-manager
 🔄 Configurer la base de données
 Si ce n'est pas encore fait, importe le fichier database.sql dans MySQL :
 1.	Connecte-toi à MySQL : 
-```mysql -u root -p```
-2.	Crée une base de données : 
-```CREATE DATABASE wireguard_manager;```
-3.	Quitte MySQL et importe le fichier SQL : 
+```
+mysql -u root -p
+```
+3.	Crée une base de données : 
+```
+CREATE DATABASE wireguard_manager;
+```
+5.	Quitte MySQL et importe le fichier SQL : 
 
-```mysql -u root -p wireguard_manager < /var/www/html/wireguard-manager/db/database.sql```
+```
+mysql -u root -p wireguard_manager < /var/www/html/wireguard-manager/db/database.sql
+```
 
 2 - Configure config.php :
 Ouvre config.php et assure-toi que les informations MySQL sont correctes :

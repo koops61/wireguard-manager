@@ -69,9 +69,6 @@ Vérifier si Apache fonctionne :
 •	Va sur ton navigateur et tape http://[IP-de-ton-Raspberry]
 •	Tu devrais voir la page d’accueil Apache 🎉
 
-📝 4. Télécharger et configurer le projet web
-•	Place ton site web dans le dossier Apache :
-
 
 📥 Cloner le projet sur le Raspberry Pi
 
@@ -99,7 +96,8 @@ sudo chown -R www-data:www-data /var/www/html/wireguard-manager
 sudo chmod -R 755 /var/www/html/wireguard-manager
 ```
 ⚙️ Configuration
-🔄 Configurer la base de données
+
+🔄Configurer la base de données
 Si ce n'est pas encore fait, importe le fichier database.sql dans MySQL :
 1.	Connecte-toi à MySQL : 
 ```
@@ -119,10 +117,10 @@ mysql -u root -p wireguard_manager < /var/www/html/wireguard-manager/db/database
 Ouvre config.php et assure-toi que les informations MySQL sont correctes :
 
 🚀 Utilisation
-Ouvre le site web depuis ton navigateur :
-``
+Ouvre le site web depuis ton navigateur : 
+
 http://ip-de-ton-serveur/wireguard-manager/
-``
+
 Depuis l’interface :
 
 Ajouter un client

@@ -26,7 +26,7 @@
 - MySQL / MariaDB
 - WireGuard installé et configuré sur le serveur
 - `php-mysql`, `php-curl`, `php-qrcode` (à venir)
-- Un nom de domaine ou un accès à distance (ex. `kaniberry.ddns.net`)
+- Un nom de domaine ou un accès à distance (ex. `hostname.ddns.net`)
 
 ---
 
@@ -111,8 +111,6 @@ Voir la liste des clients autorisés
 
 🔐 Sécurité
 ➡ Pense à restreindre l'accès à ton interface via un .htpasswd ou une authentification.
-
-➡ Un KillSwitch WireGuard est disponible dans le répertoire /tools/ pour bloquer le trafic hors tunnel (Windows .bat).
 
 📌 À venir
 ✅ Téléchargement du QR Code pour les smartphones

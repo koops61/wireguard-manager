@@ -34,10 +34,10 @@
 🛠️ 1. Installer les paquets nécessaires : si Apache, PHP, MySQL sont déjà installer passe les étapes 1, 2 et 3
 
 Sur ton Raspberry Pi, commence par installer Apache, PHP, MySQL et d'autres outils utiles :
-``
+```
 sudo apt update && sudo apt upgrade -y
 sudo apt install apache2 mariadb-server mariadb-client php libapache2-mod-php php-mysql php-cli unzip git -y
-``
+```
 
 🔧 2. Configurer MySQL (MariaDB)
 Après l’installation, sécurise ton serveur MySQL :

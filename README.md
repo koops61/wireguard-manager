@@ -233,16 +233,15 @@ sudo systemctl status rsyslog
 ```
 ✅ Il doit être active (running).
 force-le en lançant cette commande :
-
-```
+bash
+CopierModifier
 sudo touch /var/log/auth.log
 sudo chmod 644 /var/log/auth.log
 sudo chown root:adm /var/log/auth.log
-```
 Puis redémarre rsyslog :
-```
+bash
+CopierModifier
 sudo systemctl restart rsyslog
-```
 ________________________________________
 ✅ Vérifier la configuration SSH
 Il est possible que SSH ne soit pas configuré pour générer des logs.
@@ -294,7 +293,9 @@ sudo systemctl status fail2ban
 ✅ Si tout est bon, tu devrais voir active (running).
 ________________________________________
 🚀 SI ERREUR  Vérifier la configuration de Fail2Ban
+
 Si Fail2Ban ne démarre pas, il peut y avoir une erreur dans sa configuration.
+
 Vérifie le fichier de logs pour voir pourquoi il ne démarre pas :
 ```
 sudo journalctl -u fail2ban --no-pager --lines=50
@@ -337,12 +338,11 @@ findtime = 600
 
 Sauvegarde et quitte (CTRL + X, O, Entrée).
 
-
 ✅ Si tout va bien, Fail2Ban démarre.
-
 ________________________________________
 
 🔎 Vérifier que SSH est bien protégé
+
 Après avoir démarré Fail2Ban, teste à nouveau :
 ```
 sudo fail2ban-client status sshd
@@ -363,11 +363,112 @@ Status for the jail: sshd
 Si des IPs apparaissent sous "Banned IP list", cela signifie que Fail2Ban bloque correctement les attaquants. 🚀
 
 🚀 Débannir une IP si besoin
+
 Si une IP légitime est bannie (exemple : 92.255.85.107), débannis-la avec :
 ```
 sudo fail2ban-client set sshd unbanip 92.255.85.107
 ```
+🔥 Installation et Configuration de ufw (Uncomplicated Firewall)
+
+ufw (Uncomplicated Firewall) est un pare-feu simple qui permet de bloquer ou d'autoriser les connexions à ton Raspberry Pi.
+
+________________________________________
+✅ Installer ufw
+
+Sur ton Raspberry Pi, exécute :
+```
+sudo apt update && sudo apt install ufw -y
+```
+
+________________________________________
+🔥 Autoriser SSH et WireGuard
+
+Avant d’activer ufw, assure-toi d’autoriser SSH et WireGuard, sinon tu risques de te bloquer toi-même.
+
+Autoriser SSH (port 2222, modifié sur ton Raspberry Pi) :
+```
+sudo ufw allow 2222/tcp
+```
+
+Autoriser WireGuard (port 1194, si c'est celui que tu utilises) :
+```
+sudo ufw allow 1194/udp
+```
+
+Autoriser le trafic local sur le VPN (ex : 10.0.0.0/24) :
+```
+sudo ufw allow from 10.0.0.0/24
+```
+
+Autoriser le trafic depuis ton réseau local (192.168.1.0/24) :
+```
+sudo ufw allow from 192.168.1.0/24
+```
+
+________________________________________
+🚀 Activer ufw
+
+Une fois les règles définies, active le pare-feu :
+```
+sudo ufw enable
+```
+
+🔴 ⚠️ ATTENTION : Si tu n’as pas autorisé SSH (ufw allow 2222/tcp), tu risques de bloquer ta connexion !
+
+Vérifie que ufw fonctionne bien :
+```
+sudo ufw status verbose
+```
+
+✅ Tu devrais voir quelque chose comme :
+```
+Status: active
+
+To                         Action      From
+--                         ------      ----
+2222/tcp                   ALLOW       Anywhere
+1194/udp                   ALLOW       Anywhere
+10.0.0.0/24                ALLOW       Anywhere
+192.168.1.0/24             ALLOW       Anywhere
+```
+
+________________________________________
+
+🔒 Ajouter des règles supplémentaires (facultatif)
+
+Si tu veux bloquer tout le trafic entrant sauf les ports autorisés, exécute :
+```
+sudo ufw default deny incoming
+sudo ufw default allow outgoing
+```
+Cela empêche toutes les connexions non autorisées d’entrer.
+
+Si tu veux voir toutes les règles en place :
+```
+sudo ufw status numbered
+```
+
+Si jamais tu veux supprimer une règle (par exemple la numéro 2) :
+```
+sudo ufw delete 2
+```
+
+________________________________________
+🛠 Tester si le pare-feu bloque bien les attaques
+
+Une fois ufw activé, surveille les connexions :
+```
+sudo journalctl -u ufw --no-pager --lines=50
+```
+
+Et regarde si Fail2Ban continue de bien bannir les IPs suspectes :
+```
+sudo fail2ban-client status sshd
+```
+
+
 🔄 2 - Préparation pour une connexion sur la page Web sécurisée : 
+
 Edite le fichier hash_password.php qui se trouve a la racine de ton site
 ```
 <?php

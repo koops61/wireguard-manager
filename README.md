@@ -260,6 +260,31 @@ Vérifie la configuration avec :
 ```
 sudo fail2ban-client -x start
 ```
+Édite la configuration de sshd dans Fail2Ban :
+```
+sudo nano /etc/fail2ban/jail.local
+```
+
+Ajoute (ou modifie) cette section :
+```
+[sshd]
+enabled = true
+port = 2222
+filter = sshd
+logpath = /var/log/auth.log
+maxretry = 5
+bantime = 3600
+findtime = 600
+```
+
+📌 Explication :
+•	enabled = true → Active le filtrage SSH.
+•	port = 2222 → Indique à Fail2Ban que ton serveur SSH écoute sur 2222.
+•	logpath = /var/log/auth.log → C’est le bon fichier de logs pour SSH sur Debian/Raspbian.
+•	maxretry = 5 → 5 échecs de connexion avant un bannissement.
+•	bantime = 3600 → Bannissement de 1 heure.
+•	findtime = 600 → Vérifie les tentatives échouées dans les 10 dernières minutes.
+Sauvegarde et quitte (CTRL + X, O, Entrée).
 
 ✅ Si tout va bien, Fail2Ban démarre.
 ________________________________________
@@ -270,6 +295,7 @@ sudo fail2ban-client status sshd
 ```
 
 ✅ Si ça fonctionne, tu verras quelque chose comme :
+
 ```
 Status for the jail: sshd
 |- Filter
@@ -282,25 +308,28 @@ Status for the jail: sshd
    `- Banned IP list: 192.168.1.100
 ```
 
-Cela signifie que Fail2Ban surveille bien SSH et bloque les attaques.
+Si des IPs apparaissent sous "Banned IP list", cela signifie que Fail2Ban bloque correctement les attaquants. 🚀
 
 
-🔄 2 - Préparation pour une connexion sur la page Web sécurisée : 
+🔄 2 - Préparation pour une connexion sur une page Web sécurisée : 
 Edite le fichier hash_password.php qui se trouve a la racine de ton site
 ```
 <?php
 echo password_hash(" ton_password_ici", PASSWORD_BCRYPT);
 ?>
 ```
+
 et ouvre le dans une page web sur ton site Pour générer ton password en hash 
 ex : 
 http://ip-de-ton-serveur/wireguard-manager/hash_password.php
+
 Note-le quelque part, il servira à l'étape suivante ! 📝
+
 
 🔄 3 - Configuration de config_login.php :
 
 Edite le fichier config_login.php qui se trouve dans le dossier ./conf/ 
-Tu dois indiquer un nom d'utilisateur et un password hash  que tu as généré au préalable à l’étape 12.3
+Tu dois indiquer un nom d'utilisateur et un password hash  que tu as généré au préalable à l’étape 12.2
 
 attention à ne jamais mettre ton mots de passe En clair  ici:
 ```
@@ -321,7 +350,7 @@ http://ip-de-ton-serveur/wireguard-manager/
 
 renseigne ton nom d'utilisateur ainsi que ton mot de passe créer à l'étape 12
 
- « Attention ton mot de passe est non le PASS-HASH »
+ « Attention 'ton mot de passe' est non le 'PASS-HASH' »
 
  
 

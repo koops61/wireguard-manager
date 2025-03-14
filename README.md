@@ -1,8 +1,7 @@
 # 🔐 WireGuard Manager
 
 **WireGuard Manager** est une interface web simple et efficace pour gérer vos connexions VPN WireGuard depuis un serveur (ex. Raspberry Pi). Il permet d'ajouter, supprimer, afficher et gérer facilement les clients via une base de données et une interface PHP/MySQL.
- ![image](https://github.com/user-attachments/assets/673e35d4-fb46-4c1b-a18c-1191f14f3ea4)
-
+  
 
 ---
 
@@ -217,12 +216,81 @@ $password = 'password';
 ```
 
 🔐 ÉTAPE 12. Sécurité : 
+👉  1 Installe fail2ban pour bloquer les tentatives d’attaques sur SSH :
+```
+sudo apt update && sudo apt install fail2ban -y
+```
+Une fois installé, active-le :
+```
+sudo systemctl enable fail2ban
+sudo systemctl start fail2ban
+```
+Vérifie que ça fonctionne :
+```
+sudo fail2ban-client status sshd
+```
 
-🔄 - Préparation pour une connexion sécurisée : 
+ Démarrer et activer Fail2Ban
+```
+sudo systemctl start fail2ban
+```
+
+ Active-le pour qu'il démarre au boot :
+
+```
+sudo systemctl enable fail2ban
+```
+
+Vérifie que le service tourne bien :
+
+```
+sudo systemctl status fail2ban
+```
+
+✅ Si tout est bon, tu devrais voir active (running).
+________________________________________
+🚀 SI ERREUR  Vérifier la configuration de Fail2Ban
+Si Fail2Ban ne démarre pas, il peut y avoir une erreur dans sa configuration.
+Vérifie le fichier de logs pour voir pourquoi il ne démarre pas :
+```
+sudo journalctl -u fail2ban --no-pager --lines=50
+```
+
+Vérifie la configuration avec :
+```
+sudo fail2ban-client -x start
+```
+
+✅ Si tout va bien, Fail2Ban démarre.
+________________________________________
+🔎 Vérifier que SSH est bien protégé
+Après avoir démarré Fail2Ban, teste à nouveau :
+```
+sudo fail2ban-client status sshd
+```
+
+✅ Si ça fonctionne, tu verras quelque chose comme :
+```
+CopierModifier
+Status for the jail: sshd
+|- Filter
+|  |- Currently failed: 0
+|  |- Total failed: 3
+|  `- File list: /var/log/auth.log
+`- Actions
+   |- Currently banned: 1
+   |- Total banned: 1
+   `- Banned IP list: 192.168.1.100
+```
+
+Cela signifie que Fail2Ban surveille bien SSH et bloque les attaques.
+
+
+🔄 2 - Préparation pour une connexion sur la page Web sécurisée : 
 Edite le fichier hash_password.php qui se trouve a la racine de ton site
 ```
 <?php
-echo password_hash("ton-mdp-ici-et ouvre dans une page web sur le srv pour cree le mdp en hash en suite copie colle dans config_login.php", PASSWORD_BCRYPT);
+echo password_hash(" ton_password_ici", PASSWORD_BCRYPT);
 ?>
 ```
 et ouvre le dans une page web sur ton site Pour générer ton password en hash 
@@ -230,10 +298,11 @@ ex :
 http://ip-de-ton-serveur/wireguard-manager/hash_password.php
 Note-le quelque part, il servira à l'étape suivante ! 📝
 
-🔄 - Configure config_login.php :
+🔄 3 - Configuration de config_login.php :
 
 Edite le fichier config_login.php qui se trouve dans le dossier ./conf/ 
-Tu dois indiquer un nom d'utilisateur et un password hash  que tu as généré au préalable
+Tu dois indiquer un nom d'utilisateur et un password hash  que tu as généré au préalable à l’étape 12.3
+
 attention à ne jamais mettre ton mots de passe En clair  ici:
 ```
     'username' => 'user',
@@ -254,11 +323,10 @@ http://ip-de-ton-serveur/wireguard-manager/
 renseigne ton nom d'utilisateur ainsi que ton mot de passe créer à l'étape 12
 
  « Attention ton mot de passe est non le PASS-HASH »
+
  
- ![image](https://github.com/user-attachments/assets/668a3c31-bf91-4225-9ea5-823e97dcdc3a)
 
-
-Tu réussis à te connecter youpi ;)
+Tu réussis à te connecter youpi 😉
 tu dois aller maintenant sur ton site pour supprimer le fichier hash_password.php : 
 
 ./wireguard-manager/hash_password.php

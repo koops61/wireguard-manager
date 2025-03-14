@@ -175,7 +175,9 @@ sudo chown -R www-data:www-data /var/www/html/wireguard-manager
 sudo chmod -R 755 /var/www/html/wireguard-manager
 ```
 ⚙️ Configuration web
+
 🔄 Configurer la base de données
+
 Si ce n'est pas encore fait, importe le fichier database.sql dans MySQL :
 1.	Connecte-toi à MySQL : 
 ```
@@ -192,6 +194,7 @@ mysql -u root -p wireguard_manager < /var/www/html/wireguard-manager/db/database
 ```
 
 🔄 - Configure config.php :
+
 Edite le fichier config.php qui se trouve dans le dossier ./conf/ et assure-toi que les informations MySQL sont correctes :
 ```
 // Configuration de la connexion à la base de données
@@ -200,7 +203,7 @@ $dbname = 'wireguard_manager';
 $username = 'root';
 $password = 'password';
 ```
-🔄 - préparation pour une connexion sécurisée  
+🔄 - préparation pour une connexion sécurisée : 
 Edite le fichier hash_password.php qui se trouve a la racine de ton site
 ```
 
@@ -214,6 +217,7 @@ http://ip-de-ton-serveur/wireguard-manager/hash_password.php
 Note-le quelque part, il servira à l'étape suivante ! 📝
 
 🔄 - Configure config_login.php :
+
 Edite le fichier config_login.php qui se trouve dans le dossier ./conf/ 
 Tu dois indiquer un nom d'utilisateur et un password hash  que tu as généré au préalable
 attention à ne jamais mettre ton mots de passe En clair  ici:

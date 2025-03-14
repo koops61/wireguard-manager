@@ -216,6 +216,50 @@ $password = 'password';
 ```
 
 🔐 ÉTAPE 12. Sécurité : 
+✅ Installer et Activer rsyslog (si ce n'est pas déjà fait) :
+ 
+```
+sudo apt update && sudo apt install rsyslog -y
+```
+
+Active et démarre rsyslog :
+```
+sudo systemctl enable rsyslog
+sudo systemctl start rsyslog
+```
+Vérifie son statut :
+```
+sudo systemctl status rsyslog
+```
+✅ Il doit être active (running).
+force-le en lançant cette commande :
+
+```
+sudo touch /var/log/auth.log
+sudo chmod 644 /var/log/auth.log
+sudo chown root:adm /var/log/auth.log
+```
+Puis redémarre rsyslog :
+```
+sudo systemctl restart rsyslog
+```
+________________________________________
+✅ Vérifier la configuration SSH
+Il est possible que SSH ne soit pas configuré pour générer des logs.
+Édite le fichier de configuration SSH :
+```
+sudo nano /etc/ssh/sshd_config
+```
+Assure-toi que cette ligne est présente et non commentée (# devant = désactivé) :
+```
+LogLevel INFO
+```
+Sauvegarde (CTRL + X, O, Entrée).
+Redémarre le service SSH :
+```
+sudo systemctl restart ssh
+```
+
 👉  1 Installe fail2ban pour bloquer les tentatives d’attaques sur SSH :
 ```
 sudo apt update && sudo apt install fail2ban -y
@@ -295,7 +339,6 @@ sudo fail2ban-client status sshd
 ```
 
 ✅ Si ça fonctionne, tu verras quelque chose comme :
-
 ```
 Status for the jail: sshd
 |- Filter
@@ -307,29 +350,29 @@ Status for the jail: sshd
    |- Total banned: 1
    `- Banned IP list: 192.168.1.100
 ```
-
 Si des IPs apparaissent sous "Banned IP list", cela signifie que Fail2Ban bloque correctement les attaquants. 🚀
 
-
-🔄 2 - Préparation pour une connexion sur une page Web sécurisée : 
+🚀 Débannir une IP si besoin
+Si une IP légitime est bannie (exemple : 92.255.85.107), débannis-la avec :
+```
+sudo fail2ban-client set sshd unbanip 92.255.85.107
+```
+🔄 2 - Préparation pour une connexion sur la page Web sécurisée : 
 Edite le fichier hash_password.php qui se trouve a la racine de ton site
 ```
 <?php
 echo password_hash(" ton_password_ici", PASSWORD_BCRYPT);
 ?>
 ```
-
 et ouvre le dans une page web sur ton site Pour générer ton password en hash 
 ex : 
 http://ip-de-ton-serveur/wireguard-manager/hash_password.php
-
 Note-le quelque part, il servira à l'étape suivante ! 📝
-
 
 🔄 3 - Configuration de config_login.php :
 
 Edite le fichier config_login.php qui se trouve dans le dossier ./conf/ 
-Tu dois indiquer un nom d'utilisateur et un password hash  que tu as généré au préalable à l’étape 12.2
+Tu dois indiquer un nom d'utilisateur et un password hash  que tu as généré au préalable à l’étape 12.3
 
 attention à ne jamais mettre ton mots de passe En clair  ici:
 ```
@@ -350,7 +393,7 @@ http://ip-de-ton-serveur/wireguard-manager/
 
 renseigne ton nom d'utilisateur ainsi que ton mot de passe créer à l'étape 12
 
- « Attention 'ton mot de passe' est non le 'PASS-HASH' »
+ « Attention ton mot de passe est non le PASS-HASH »
 
  
 

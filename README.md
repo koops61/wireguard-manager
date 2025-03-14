@@ -254,6 +254,7 @@ http://ip-de-ton-serveur/wireguard-manager/
 renseigne ton nom d'utilisateur ainsi que ton mot de passe créer à l'étape 12
 
  « Attention ton mot de passe est non le PASS-HASH »
+ 
  ![image](https://github.com/user-attachments/assets/668a3c31-bf91-4225-9ea5-823e97dcdc3a)
 
 

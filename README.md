@@ -322,16 +322,26 @@ findtime = 600
 ```
 
 📌 Explication :
+
 •	enabled = true → Active le filtrage SSH.
+
 •	port = 2222 → Indique à Fail2Ban que ton serveur SSH écoute sur 2222.
+
 •	logpath = /var/log/auth.log → C’est le bon fichier de logs pour SSH sur Debian/Raspbian.
+
 •	maxretry = 5 → 5 échecs de connexion avant un bannissement.
+
 •	bantime = 3600 → Bannissement de 1 heure.
+
 •	findtime = 600 → Vérifie les tentatives échouées dans les 10 dernières minutes.
+
 Sauvegarde et quitte (CTRL + X, O, Entrée).
 
+
 ✅ Si tout va bien, Fail2Ban démarre.
+
 ________________________________________
+
 🔎 Vérifier que SSH est bien protégé
 Après avoir démarré Fail2Ban, teste à nouveau :
 ```

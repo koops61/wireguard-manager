@@ -117,7 +117,7 @@ sudo apt update && sudo apt upgrade -y
 sudo apt install apache2 mariadb-server mariadb-client php libapache2-mod-php php-mysql php-cli unzip git -y
 ```
 
-🔧 7. Configurer MySQL (MariaDB)
+🔧 ÉTAPE 7. Configurer MySQL (MariaDB)
 Après l’installation, sécurise ton serveur MySQL :
 ```
 sudo mysql_secure_installation
@@ -130,7 +130,7 @@ Réponds aux questions comme ceci :
 •	Supprimer la base de test : Oui
 •	Recharger les tables de privilèges : Oui
 
-🌐 8. Configurer Apache
+🌐 ÉTAPE 8. Configurer Apache
 Activer Apache et le démarrer :
 ```
 sudo systemctl enable apache2
@@ -147,7 +147,7 @@ Vérifier si Apache fonctionne :
 •	Va sur ton navigateur et tape http://[IP-de-ton-Raspberry]
 •	Tu devrais voir la page d’accueil Apache 🎉
 
-🛠️ 9. Installer iptables
+🛠️ ÉTAPE 9. Installer iptables
 ```
 sudo apt update && sudo apt install iptables -y
 ```
@@ -174,7 +174,7 @@ cd /var/www/html
 git clone https://github.com/koops61/wireguard-manager.git
 ```
 
-5.	Entre dans le dossier du projet : 
+4.	Entre dans le dossier du projet : 
 ```
 cd wireguard-manager
 ```
@@ -185,7 +185,7 @@ Pour que le serveur web (Apache ou Nginx) puisse accéder aux fichiers :
 sudo chown -R www-data:www-data /var/www/html/wireguard-manager
 sudo chmod -R 755 /var/www/html/wireguard-manager
 ```
-⚙️ 11. Configuration web
+⚙️ ÉTAPE 11. Configuration web
 
 🔄 Configurer la base de données
 
@@ -215,7 +215,7 @@ $username = 'root';
 $password = 'password';
 ```
 
-🔐 12. Sécurité : 
+🔐 ÉTAPE 12. Sécurité : 
 
 🔄 - Préparation pour une connexion sécurisée : 
 Edite le fichier hash_password.php qui se trouve a la racine de ton site
@@ -249,6 +249,17 @@ sudo sysctl -p
 🚀 Utilisation
 Ouvre le site web depuis ton navigateur :
 http://ip-de-ton-serveur/wireguard-manager/
+
+renseigne ton nom d'utilisateur ainsi que ton mot de passe créer à l'étape 12
+
+ « Attention ton mot de passe est non le PASS-HASH »
+ 
+
+Tu réussis à te connecter youpi tu as réussi
+tu dois aller maintenant sur ton site pour supprimer le fichier hash_password.php : 
+
+./wireguard-manager/hash_password.php
+
 
 Depuis l’interface :
 

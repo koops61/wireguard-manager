@@ -390,7 +390,7 @@ Autoriser SSH (port 2222, modifié sur ton Raspberry Pi) :
 sudo ufw allow 2222/tcp
 ```
 
-Autoriser WireGuard (port 1194, si c'est celui que tu utilises) :
+Autoriser WireGuard (port 51820, si c'est celui que tu utilises) :
 ```
 sudo ufw allow 1194/udp
 ```
@@ -427,7 +427,7 @@ Status: active
 To                         Action      From
 --                         ------      ----
 2222/tcp                   ALLOW       Anywhere
-1194/udp                   ALLOW       Anywhere
+51820/udp                   ALLOW       Anywhere
 10.0.0.0/24                ALLOW       Anywhere
 192.168.1.0/24             ALLOW       Anywhere
 ```
@@ -510,9 +510,10 @@ renseigne ton nom d'utilisateur ainsi que ton mot de passe créer à l'étape 12
 
 Tu réussis à te connecter youpi 😉
 tu dois aller maintenant sur ton site pour supprimer le fichier hash_password.php : 
-
-./wireguard-manager/hash_password.php
-
+```
+cd /var/www/html/wireguard-manager/
+rm hash_password.php
+```
 
 Depuis l’interface :
 

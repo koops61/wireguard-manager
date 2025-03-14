@@ -203,10 +203,12 @@ $dbname = 'wireguard_manager';
 $username = 'root';
 $password = 'password';
 ```
+
+🔐 Sécurité : 
+
 🔄 - préparation pour une connexion sécurisée : 
 Edite le fichier hash_password.php qui se trouve a la racine de ton site
 ```
-
 <?php
 echo password_hash("ton-mdp-ici-et ouvre dans une page web sur le srv pour cree le mdp en hash en suite copie colle dans config_login.php", PASSWORD_BCRYPT);
 ?>
@@ -243,9 +245,7 @@ Ajouter un client
 Télécharger la configuration
 Supprimer un client
 Voir la liste des clients autorisés
-
-🔐 Sécurité
-➡ Pense à restreindre l'accès à ton interface via un .htpasswd ou une authentification.
+-------------------
 
 📌 À venir
 ✅ Téléchargement du QR Code pour les smartphones

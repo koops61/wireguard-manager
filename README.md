@@ -271,7 +271,6 @@ sudo fail2ban-client status sshd
 
 ✅ Si ça fonctionne, tu verras quelque chose comme :
 ```
-CopierModifier
 Status for the jail: sshd
 |- Filter
 |  |- Currently failed: 0

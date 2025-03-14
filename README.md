@@ -147,7 +147,18 @@ Vérifier si Apache fonctionne :
 •	Va sur ton navigateur et tape http://[IP-de-ton-Raspberry]
 •	Tu devrais voir la page d’accueil Apache 🎉
 
-📝 9. Télécharger et configurer le projet web
+🛠️ 9. Installer iptables
+```
+sudo apt update && sudo apt install iptables -y
+```
+Puis, vérifie qu'il est bien installé avec :
+```
+iptables –version
+```
+Si la commande renvoie bien une version (iptables v1.x.x), c'est bon.
+
+
+📝 10. Télécharger et configurer le projet web
 
 📥 Cloner le projet sur le Raspberry Pi
 
@@ -174,7 +185,7 @@ Pour que le serveur web (Apache ou Nginx) puisse accéder aux fichiers :
 sudo chown -R www-data:www-data /var/www/html/wireguard-manager
 sudo chmod -R 755 /var/www/html/wireguard-manager
 ```
-⚙️ Configuration web
+⚙️ 11. Configuration web
 
 🔄 Configurer la base de données
 
@@ -204,7 +215,7 @@ $username = 'root';
 $password = 'password';
 ```
 
-🔐 Sécurité : 
+🔐 12. Sécurité : 
 
 🔄 - Préparation pour une connexion sécurisée : 
 Edite le fichier hash_password.php qui se trouve a la racine de ton site

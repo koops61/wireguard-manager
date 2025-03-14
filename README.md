@@ -206,7 +206,7 @@ $password = 'password';
 
 🔐 Sécurité : 
 
-🔄 - préparation pour une connexion sécurisée : 
+🔄 - Préparation pour une connexion sécurisée : 
 Edite le fichier hash_password.php qui se trouve a la racine de ton site
 ```
 <?php

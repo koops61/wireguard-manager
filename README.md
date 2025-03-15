@@ -1,7 +1,9 @@
 # 🔐 WireGuard Manager
 
 **WireGuard Manager** est une interface web simple et efficace pour gérer vos connexions VPN WireGuard depuis un serveur (ex. Raspberry Pi). Il permet d'ajouter, supprimer, afficher et gérer facilement les clients via une base de données et une interface PHP/MySQL.
-  
+
+![Capture d'écran 2025-03-13 234020](https://github.com/user-attachments/assets/05ab5515-377c-4ff6-91f6-58001fb28cf7)
+
 
 ---
 
@@ -505,6 +507,9 @@ http://ip-de-ton-serveur/wireguard-manager/
 renseigne ton nom d'utilisateur ainsi que ton mot de passe créer à l'étape 12
 
  « Attention ton mot de passe est non le PASS-HASH »
+
+
+![Capture d'écran 2025-03-14 020539](https://github.com/user-attachments/assets/f28e42bc-9d08-452a-9729-91585dbdbb14)
 
  
 

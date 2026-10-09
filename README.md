@@ -208,13 +208,12 @@ mysql -u root -p wireguard_manager < /var/www/html/wireguard-manager/db/database
 
 🔄 - Configure config.php :
 
-Edite le fichier config.php qui se trouve dans le dossier ./conf/ et assure-toi que les informations MySQL sont correctes :
-```
-// Configuration de la connexion à la base de données
-$host = 'localhost';
-$dbname = 'wireguard_manager';
-$username = 'root';
-$password = 'password';
+Edite le fichier config.php qui se trouve dans le dossier ./config/ et assure-toi que les informations MySQL et WireGuard sont correctes :
+```php
+$db_host = 'localhost';
+$db_name = 'wireguard_manager';
+$db_user = 'root';
+$db_pass = 'ton_mot_de_passe';
 ```
 
 🔐 ÉTAPE 12. Sécurité : 
@@ -392,9 +391,9 @@ Autoriser SSH (port 2222, modifié sur ton Raspberry Pi) :
 sudo ufw allow 2222/tcp
 ```
 
-Autoriser WireGuard (port 51820, si c'est celui que tu utilises) :
+Autoriser WireGuard (port 51820 UDP par défaut) :
 ```
-sudo ufw allow 1194/udp
+sudo ufw allow 51820/udp
 ```
 
 Autoriser le trafic local sur le VPN (ex : 10.0.0.0/24) :
@@ -469,28 +468,29 @@ sudo fail2ban-client status sshd
 ```
 
 
-🔄 2 - Préparation pour une connexion sur la page Web sécurisée : 
+🔄 2 - Préparation du mot de passe de connexion :
 
-Edite le fichier hash_password.php qui se trouve a la racine de ton site
+Génère ton hash directement en ligne de commande sur le serveur :
+```bash
+php /var/www/html/wireguard-manager/hash_password.php "ton_mot_de_passe"
 ```
-<?php
-echo password_hash(" ton_password_ici", PASSWORD_BCRYPT);
-?>
+(ou ouvre la page `http://ip-de-ton-serveur/wireguard-manager/hash_password.php` dans ton navigateur).
+
+Copie le hash généré, puis supprime le fichier pour des raisons de sécurité :
+```bash
+rm /var/www/html/wireguard-manager/hash_password.php
 ```
-et ouvre le dans une page web sur ton site Pour générer ton password en hash 
-ex : 
-http://ip-de-ton-serveur/wireguard-manager/hash_password.php
-Note-le quelque part, il servira à l'étape suivante ! 📝
 
 🔄 3 - Configuration de config_login.php :
 
-Edite le fichier config_login.php qui se trouve dans le dossier ./conf/ 
-Tu dois indiquer un nom d'utilisateur et un password hash  que tu as généré au préalable à l’étape 12.3
+Edite le fichier `config_login.php` qui se trouve dans le dossier `./config/` :
+Tu dois indiquer ton nom d'utilisateur et le mot de passe hashé généré :
 
-attention à ne jamais mettre ton mots de passe En clair  ici:
-```
-    'username' => 'user',
-    'password_hash' => 'password-hash-here'
+```php
+return [
+    'username' => 'admin',
+    'password_hash' => '$2y$10$...' // colle ici le hash généré
+];
 ```
 
 🔧 Bonus : Activer le Routage pour Accès au Réseau Local

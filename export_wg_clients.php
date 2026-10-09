@@ -1,64 +1,103 @@
 <?php
-require '/config/secure.php';
-require '/config/config.php';
-?>
-<?php
-require '/config/config.php';
+require_once __DIR__ . '/secure.php';
+require_once __DIR__ . '/config/config.php';
 
-if (!isset($_POST['selected_clients'])) {
-    die("Aucun client sélectionné !");
+if ($_SERVER["REQUEST_METHOD"] !== "POST") {
+    header("Location: index.php");
+    exit;
 }
 
-// Paramètres généraux
-$endpoint = "domain.com:port-wireguard";
-$allowed_ips = "0.0.0.0/0, ::/0";
+// Vérification CSRF
+if (!verify_csrf_token($_POST['csrf_token'] ?? '')) {
+    die("Jeton CSRF invalide ou expiré.");
+}
 
-// Récupérer les IDs sélectionnés
-$selected_ids = implode(",", array_map('intval', $_POST['selected_clients']));
+// Support export unitaire ou multiple
+$selected_ids = [];
+if (!empty($_POST['single_client_id'])) {
+    $selected_ids = [intval($_POST['single_client_id'])];
+} elseif (!empty($_POST['selected_clients']) && is_array($_POST['selected_clients'])) {
+    $selected_ids = array_filter(array_map('intval', $_POST['selected_clients']));
+}
 
-// Récupérer les informations des clients sélectionnés
-$stmt = $pdo->query("SELECT * FROM clients WHERE id IN ($selected_ids)");
+if (empty($selected_ids)) {
+    header("Location: index.php?error=" . urlencode("Aucun client sélectionné pour l'export."));
+    exit;
+}
+
+$placeholders = implode(',', array_fill(0, count($selected_ids), '?'));
+$stmt = $pdo->prepare("SELECT * FROM clients WHERE id IN ($placeholders)");
+$stmt->execute($selected_ids);
 $clients = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 if (empty($clients)) {
-    die("Aucune donnée à exporter.");
+    header("Location: index.php?error=" . urlencode("Aucun client trouvé pour l'export."));
+    exit;
 }
 
-// Génération des fichiers ZIP
-$zip = new ZipArchive();
-$zip_filename = "wg-clients.zip";
+// Fonction pour générer le contenu du fichier .conf d'un client
+function generate_client_conf(array $client, string $server_pubkey, string $endpoint, string $dns): string {
+    $name = $client['name'];
+    $privkey = $client['private_key'];
+    $ip = $client['ip_address'];
 
-if ($zip->open($zip_filename, ZipArchive::CREATE) !== TRUE) {
-    die("Impossible de créer l'archive ZIP.");
+    $conf = "# WireGuard Client: {$name}\n";
+    $conf .= "[Interface]\n";
+    $conf .= "PrivateKey = {$privkey}\n";
+    $conf .= "Address = {$ip}/24\n";
+    if (!empty($dns)) {
+        $conf .= "DNS = {$dns}\n";
+    }
+    $conf .= "\n";
+    $conf .= "[Peer]\n";
+    $conf .= "PublicKey = {$server_pubkey}\n";
+    $conf .= "Endpoint = {$endpoint}\n";
+    $conf .= "AllowedIPs = 0.0.0.0/0, ::/0\n";
+    $conf .= "PersistentKeepalive = 25\n";
+
+    return $conf;
+}
+
+// Cas 1 : Téléchargement d'un seul client (fichier .conf direct)
+if (count($clients) === 1) {
+    $client = $clients[0];
+    $conf_content = generate_client_conf($client, $wg_server_public_key, $wg_server_endpoint, $wg_client_dns);
+    $filename = preg_replace('/[^a-zA-Z0-9_-]/', '_', $client['name']) . ".conf";
+
+    header('Content-Type: text/plain; charset=utf-8');
+    header('Content-Disposition: attachment; filename="' . $filename . '"');
+    header('Content-Length: ' . strlen($conf_content));
+    echo $conf_content;
+    exit;
+}
+
+// Cas 2 : Téléchargement multiple (archive ZIP)
+if (!class_exists('ZipArchive')) {
+    die("L'extension PHP ZipArchive n'est pas installée sur le serveur. Impossible de générer l'archive ZIP.");
+}
+
+$zip = new ZipArchive();
+$temp_zip = tempnam(sys_get_temp_dir(), 'wg_zip_');
+
+if ($zip->open($temp_zip, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
+    die("Impossible de créer l'archive temporaire ZIP.");
 }
 
 foreach ($clients as $client) {
-    $wg_config = "# Client: " . htmlspecialchars($client['name']) . "\n";
-    $wg_config .= "[Interface]\n";
-    $wg_config .= "PrivateKey = PLACEHOLDER_PRIVATE_KEY\n"; // Remplacer manuellement
-    $wg_config .= "Address = " . $client['ip_address'] . "/24\n\n";
-    $wg_config .= "# Clé publique de " . htmlspecialchars($client['name']) . "\n";
-    $wg_config .= "[Peer]\n";
-    $wg_config .= "PublicKey = " . $client['public_key'] . "\n";
-    $wg_config .= "AllowedIPs = $allowed_ips\n";
-    $wg_config .= "Endpoint = $endpoint\n";
-    $wg_config .= "PersistentKeepalive = 25\n";
-
-    // Créer un fichier temporaire
-    $filename = "wg-client-" . $client['id'] . ".conf";
-    $zip->addFromString($filename, $wg_config);
+    $conf_content = generate_client_conf($client, $wg_server_public_key, $wg_server_endpoint, $wg_client_dns);
+    $filename = preg_replace('/[^a-zA-Z0-9_-]/', '_', $client['name']) . ".conf";
+    $zip->addFromString($filename, $conf_content);
 }
 
-// Fermer l'archive ZIP
 $zip->close();
 
-// Télécharger l'archive ZIP
+$zip_download_name = "wireguard-clients-" . date("Ymd-His") . ".zip";
 header('Content-Type: application/zip');
-header('Content-Disposition: attachment; filename="' . $zip_filename . '"');
-header('Content-Length: ' . filesize($zip_filename));
-readfile($zip_filename);
+header('Content-Disposition: attachment; filename="' . $zip_download_name . '"');
+header('Content-Length: ' . filesize($temp_zip));
+header('Pragma: no-cache');
+header('Expires: 0');
 
-// Supprimer le fichier ZIP temporaire après téléchargement
-unlink($zip_filename);
+readfile($temp_zip);
+@unlink($temp_zip);
 exit;
-?>

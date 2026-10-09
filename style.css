@@ -1,90 +1,413 @@
-/* Style général */
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f8f9fa;
+/* Reset & Base Styles */
+* {
+    box-sizing: border-box;
     margin: 0;
-    padding: 20px;
-    text-align: center;
+    padding: 0;
 }
 
-h1 {
-    color: #333;
-    margin-bottom: 20px;
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: #f0f2f5;
+    color: #1c1e21;
+    line-height: 1.5;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
-/* Style du tableau */
-table {
-    width: 90%;
-    margin: 20px auto;
-    border-collapse: collapse;
-    background: white;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
-    overflow: hidden;
+/* Header */
+.app-header {
+    background: #ffffff;
+    border-bottom: 1px solid #e4e6eb;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    position: sticky;
+    top: 0;
+    z-index: 100;
 }
 
-th, td {
-    padding: 12px;
-    border: 1px solid #ddd;
-    text-align: center;
+.header-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 12px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-th {
-    background-color: #007BFF;
-    color: white;
-    text-transform: uppercase;
-    font-weight: bold;
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
 
-tr:nth-child(even) {
-    background-color: #f2f2f2;
+.brand-icon {
+    font-size: 26px;
 }
 
-tr:hover {
-    background-color: #e9ecef;
+.brand h1 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #0f172a;
 }
 
-/* Clé publique avec icône */
-.public-key {
+/* Badges */
+.badge {
+    display: inline-block;
+    padding: 4px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: 999px;
+}
+
+.badge-info {
+    background-color: #e0f2fe;
+    color: #0369a1;
+}
+
+.badge-ip {
+    background-color: #f1f5f9;
+    color: #334155;
     font-family: monospace;
+    font-size: 13px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    border: 1px solid #e2e8f0;
+}
+
+/* Layout */
+.main-container {
+    max-width: 1200px;
+    margin: 24px auto;
+    padding: 0 24px;
+    width: 100%;
+    flex: 1;
+}
+
+/* Cards */
+.card {
+    background: #ffffff;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    padding: 24px;
+    margin-bottom: 24px;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.card h2 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+/* Alerts */
+.alert {
+    padding: 14px 18px;
+    border-radius: 8px;
+    margin-bottom: 20px;
     font-size: 14px;
-    color: #444;
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
-.key-icon {
-    margin-right: 5px;
-    color: #007BFF;
-    font-size: 16px;
+.alert-success {
+    background-color: #ecfdf5;
+    color: #065f46;
+    border: 1px solid #a7f3d0;
 }
 
-/* Cases à cocher */
-input[type="checkbox"] {
-    transform: scale(1.2);
-    margin-right: 10px;
+.alert-warning {
+    background-color: #fffbeb;
+    color: #92400e;
+    border: 1px solid #fde68a;
 }
 
-/* Boutons */
-.actions {
-    margin-top: 20px;
+.alert-danger {
+    background-color: #fef2f2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
 }
 
-.export-btn {
+/* Forms */
+.form-row {
+    display: flex;
+    gap: 12px;
+    align-items: flex-end;
+    margin-top: 14px;
+}
+
+.form-field {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-field label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #475569;
+}
+
+input[type="text"],
+input[type="password"] {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    font-size: 14px;
+    background-color: #fff;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.form-help {
+    display: block;
+    margin-top: 8px;
+    color: #64748b;
+    font-size: 12px;
+}
+
+.search-box input {
+    width: 240px;
+}
+
+/* Buttons */
+.btn {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    padding: 12px 20px;
-    font-size: 16px;
-    font-weight: bold;
-    text-align: center;
-    border-radius: 8px;
-    transition: 0.3s;
-    background-color: #17a2b8;
-    color: white;
-    border: none;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 6px;
+    border: 1px solid transparent;
     cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    white-space: nowrap;
 }
 
-.export-btn:hover {
-    transform: scale(1.05);
-    opacity: 0.9;
+.btn-primary {
+    background-color: #2563eb;
+    color: #ffffff;
+}
+
+.btn-primary:hover {
+    background-color: #1d4ed8;
+}
+
+.btn-success {
+    background-color: #059669;
+    color: #ffffff;
+}
+
+.btn-success:hover {
+    background-color: #047857;
+}
+
+.btn-danger {
+    background-color: #dc2626;
+    color: #ffffff;
+}
+
+.btn-danger:hover {
+    background-color: #b91c1c;
+}
+
+.btn-outline-danger {
+    background-color: transparent;
+    border-color: #fca5a5;
+    color: #dc2626;
+}
+
+.btn-outline-danger:hover {
+    background-color: #fef2f2;
+}
+
+.btn-outline-primary {
+    background-color: transparent;
+    border-color: #bfdbfe;
+    color: #2563eb;
+}
+
+.btn-outline-primary:hover {
+    background-color: #eff6ff;
+}
+
+.btn-sm {
+    padding: 6px 10px;
+    font-size: 12px;
+}
+
+.btn-icon {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    padding: 2px 4px;
+    border-radius: 4px;
+    transition: background 0.15s;
+}
+
+.btn-icon:hover {
+    background: #e2e8f0;
+}
+
+.btn-block {
+    width: 100%;
+}
+
+/* Table */
+.table-responsive {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 14px;
+}
+
+thead th {
+    background-color: #f8fafc;
+    color: #475569;
+    font-weight: 600;
+    padding: 12px 14px;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+tbody td {
+    padding: 12px 14px;
+    border-bottom: 1px solid #f1f5f9;
+    vertical-align: middle;
+}
+
+tbody tr:hover {
+    background-color: #f8fafc;
+}
+
+.key-cell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: monospace;
+    font-size: 12px;
+    color: #475569;
+}
+
+.actions-cell {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+.table-footer {
+    margin-top: 20px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 40px;
+    color: #64748b;
+    font-size: 15px;
+}
+
+/* Login Page */
+.login-body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    padding: 20px;
+}
+
+.login-card {
+    background: #ffffff;
+    border-radius: 14px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+    width: 100%;
+    padding: 32px;
+}
+
+.login-header {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.logo-badge {
+    font-size: 40px;
+    margin-bottom: 10px;
+}
+
+.login-header h2 {
+    font-size: 22px;
+    color: #0f172a;
+    font-weight: 700;
+}
+
+.subtitle {
+    color: #64748b;
+    font-size: 13px;
+    margin-top: 4px;
+}
+
+.form-group {
+    margin-bottom: 18px;
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #334155;
+}
+
+/* Footer */
+.app-footer {
+    text-align: center;
+    padding: 20px;
+    color: #94a3b8;
+    font-size: 13px;
+    border-top: 1px solid #e2e8f0;
+    background: #ffffff;
+    margin-top: auto;
+}
+
+@media (max-width: 768px) {
+    .form-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .card-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .search-box input {
+        width: 100%;
+    }
 }

@@ -1,4 +1,13 @@
-<Files "/config/config_login.php">
-    Order Allow,Deny
-    Deny from all
-</Files>
+# Désactiver le listage des répertoires
+Options -Indexes
+
+# Bloquer l'accès aux fichiers sensibles et cachés (.git, .env, .sql, .log)
+<FilesMatch "(\.(bak|config|sql|fla|psd|ini|log|sh|inc|swp|dist)|~|^\.git)">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order Deny,Allow
+        Deny from all
+    </IfModule>
+</FilesMatch>

@@ -1,4 +1,8 @@
-<Files "config_login.php">
-    Order Allow,Deny
+# Interdire formellement tout accès Web direct au dossier config
+<IfModule mod_authz_core.c>
+    Require all denied
+</IfModule>
+<IfModule !mod_authz_core.c>
+    Order Deny,Allow
     Deny from all
-</Files>
+</IfModule>

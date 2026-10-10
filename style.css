@@ -110,6 +110,13 @@ body {
     color: #1e293b;
 }
 
+.card-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
 /* Alerts */
 .alert {
     padding: 14px 18px;
@@ -125,6 +132,12 @@ body {
     background-color: #ecfdf5;
     color: #065f46;
     border: 1px solid #a7f3d0;
+}
+
+.alert-info {
+    background-color: #f0f9ff;
+    color: #0369a1;
+    border: 1px solid #bae6fd;
 }
 
 .alert-warning {

@@ -10,12 +10,15 @@
 ## 📂 Fonctionnalités
 
 ✅ Ajout de clients WireGuard avec génération automatique de clés  
-✅ Attribution automatique d'une IP dédiée par client  
-✅ Génération automatique du fichier de configuration client  
-✅ Suppression de clients via l’interface web  
-✅ Interface Web responsive et simple à utiliser  
-✅ Intégration MySQL pour le suivi des clients  
-✅ Génération de QR Codes (à venir)  
+✅ Attribution automatique d'une IP dédiée par client (sans doublons ni débordement)  
+✅ Génération automatique et export du fichier `.conf` client  
+✅ 📱 Génération de QR Codes instantanés pour smartphones (iOS & Android)  
+✅ 🟢 Monitoring des connexions en direct (statut En ligne / Hors ligne, dernier handshake, données échangées)  
+✅ 🔄 Synchronisation automatique entre le fichier `wg0.conf` et MySQL  
+✅ 📦 Téléchargement individuel ou groupé en archive ZIP  
+✅ Suppression propre et à chaud des clients sans coupure de service  
+✅ Sécurisation complète (Protection CSRF, contre la force brute, sessions strictes et `.htaccess`)  
+✅ Interface Web moderne, réactive avec recherche et copie de clé en 1 clic  
 
 ---
 
@@ -25,8 +28,8 @@
 - PHP >= 7.4
 - MySQL / MariaDB
 - WireGuard installé et configuré sur le serveur
-- `php-mysql`, `php-curl`, `php-qrcode` (à venir)
-- Un nom de domaine ou un accès à distance (ex. `hostname.ddns.net`)
+- Paquets utiles : `php-mysql`, `unzip`, `qrencode` (pour les QR Codes)
+- Un nom de domaine ou une IP dynamique (ex. `hostname.ddns.net`)
 
 ---
 
@@ -116,7 +119,7 @@ Va dans l’interface de ta box et ajoute une redirection de port vers ton Raspb
 Sur ton Raspberry Pi, commence par installer Apache, PHP, MySQL et d'autres outils utiles :
 ```
 sudo apt update && sudo apt upgrade -y
-sudo apt install apache2 mariadb-server mariadb-client php libapache2-mod-php php-mysql php-cli unzip git -y
+sudo apt install apache2 mariadb-server mariadb-client php libapache2-mod-php php-mysql php-cli unzip git qrencode -y
 ```
 
 🔧 ÉTAPE 7. Configurer MySQL (MariaDB)
@@ -520,19 +523,16 @@ cd /var/www/html/wireguard-manager/
 rm hash_password.php
 ```
 
-Depuis l’interface :
+Depuis l’interface web :
 
-Ajouter un client
-Télécharger la configuration
-Supprimer un client
-Voir la liste des clients autorisés
+- ➕ **Ajouter un client** : génération instantanée des clés et de l'IP.
+- 📱 **QR Code** : affichage direct pour scan mobile iOS / Android.
+- 📥 **Télécharger** : export direct en fichier `.conf` ou archive `.zip` multi-clients.
+- 🟢 **Monitoring** : statut en direct (En ligne / Hors ligne) et consommation de données.
+- 🔄 **Synchroniser** : import en 1 clic des clients existants depuis `wg0.conf`.
+- 🗑️ **Supprimer** : suppression propre à chaud et nettoyage BDD + fichier.
 -------------------
 
-📌 À venir
-✅ Téléchargement du QR Code pour les smartphones
-✅ Téléchargement ZIP automatique de la configuration
-✅ Ajout de filtres/sort dans l’interface
-✅ Détection automatique de doublons d'IP
 📄 Licence
 Ce projet est sous licence MIT — tu peux l’utiliser, le modifier et le redistribuer librement.
 

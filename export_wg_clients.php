@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/secure.php';
 require_once __DIR__ . '/config/config.php';
+require_once __DIR__ . '/includes/wg_helper.php';
 
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     header("Location: index.php");
@@ -35,28 +36,7 @@ if (empty($clients)) {
     exit;
 }
 
-// Fonction pour générer le contenu du fichier .conf d'un client
-function generate_client_conf(array $client, string $server_pubkey, string $endpoint, string $dns): string {
-    $name = $client['name'];
-    $privkey = $client['private_key'];
-    $ip = $client['ip_address'];
 
-    $conf = "# WireGuard Client: {$name}\n";
-    $conf .= "[Interface]\n";
-    $conf .= "PrivateKey = {$privkey}\n";
-    $conf .= "Address = {$ip}/24\n";
-    if (!empty($dns)) {
-        $conf .= "DNS = {$dns}\n";
-    }
-    $conf .= "\n";
-    $conf .= "[Peer]\n";
-    $conf .= "PublicKey = {$server_pubkey}\n";
-    $conf .= "Endpoint = {$endpoint}\n";
-    $conf .= "AllowedIPs = 0.0.0.0/0, ::/0\n";
-    $conf .= "PersistentKeepalive = 25\n";
-
-    return $conf;
-}
 
 // Cas 1 : Téléchargement d'un seul client (fichier .conf direct)
 if (count($clients) === 1) {

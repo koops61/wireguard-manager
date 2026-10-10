@@ -1,14 +1,26 @@
 <?php
 require_once __DIR__ . '/secure.php';
 require_once __DIR__ . '/config/config.php';
+require_once __DIR__ . '/includes/wg_helper.php';
 
 // Récupérer la liste des clients
 $stmt = $pdo->query("SELECT * FROM clients ORDER BY id ASC");
 $clients = $stmt->fetchAll();
 
+// Récupérer l'état en direct des connexions WireGuard (monitoring en temps réel)
+$peer_stats = get_wg_peer_stats($wg_interface);
+
 $csrf_token = get_csrf_token();
 $total_clients = count($clients);
 $max_clients = 253; // 10.0.0.2 à 10.0.0.254
+
+$online_count = 0;
+foreach ($clients as $c) {
+    $k = trim($c['public_key']);
+    if (!empty($peer_stats[$k]['is_online'])) {
+        $online_count++;
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -25,6 +37,7 @@ $max_clients = 253; // 10.0.0.2 à 10.0.0.254
                 <span class="brand-icon">🛡️</span>
                 <h1>WireGuard Manager</h1>
                 <span class="badge badge-info"><?= $total_clients ?> / <?= $max_clients ?> clients</span>
+                <span class="badge badge-success">🟢 <?= $online_count ?> en ligne</span>
             </div>
             <nav class="nav-actions">
                 <a href="logout.php" class="btn btn-outline-danger">🔓 Déconnexion</a>
@@ -108,20 +121,36 @@ $max_clients = 253; // 10.0.0.2 à 10.0.0.254
                         <table id="clientsTable">
                             <thead>
                                 <tr>
-                                    <th width="40"><input type="checkbox" id="selectAll" title="Tout sélectionner"></th>
-                                    <th width="50">ID</th>
+                                    <th width="35"><input type="checkbox" id="selectAll" title="Tout sélectionner"></th>
+                                    <th width="90">Statut</th>
+                                    <th width="45">ID</th>
                                     <th>Nom</th>
                                     <th>Adresse IP</th>
                                     <th>Clé Publique</th>
+                                    <th>Activité / Trafic</th>
                                     <th>Créé le</th>
-                                    <th width="190">Actions</th>
+                                    <th width="210">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php foreach ($clients as $client): ?>
+                                <?php foreach ($clients as $client): 
+                                    $k = trim($client['public_key']);
+                                    $st = $peer_stats[$k] ?? null;
+                                    $is_online = !empty($st['is_online']);
+                                    $handshake_time = $st['handshake'] ?? 0;
+                                    $rx_bytes = $st['rx'] ?? 0;
+                                    $tx_bytes = $st['tx'] ?? 0;
+                                ?>
                                 <tr>
                                     <td>
                                         <input type="checkbox" name="selected_clients[]" value="<?= (int)$client['id'] ?>" class="client-checkbox">
+                                    </td>
+                                    <td>
+                                        <?php if ($is_online): ?>
+                                            <span class="status-pill status-online" title="Connecté activement">🟢 En ligne</span>
+                                        <?php else: ?>
+                                            <span class="status-pill status-offline" title="Dernière activité : <?= format_last_seen($handshake_time) ?>">⚪ Hors ligne</span>
+                                        <?php endif; ?>
                                     </td>
                                     <td><?= (int)$client['id'] ?></td>
                                     <td class="client-name"><strong><?= htmlspecialchars($client['name'], ENT_QUOTES, 'UTF-8') ?></strong></td>
@@ -136,8 +165,21 @@ $max_clients = 253; // 10.0.0.2 à 10.0.0.254
                                             </button>
                                         </div>
                                     </td>
+                                    <td>
+                                        <div class="activity-cell">
+                                            <small class="text-muted">Vu : <?= format_last_seen($handshake_time) ?></small>
+                                            <?php if ($rx_bytes > 0 || $tx_bytes > 0): ?>
+                                                <small class="transfer-info">↓ <?= format_bytes($rx_bytes) ?> · ↑ <?= format_bytes($tx_bytes) ?></small>
+                                            <?php endif; ?>
+                                        </div>
+                                    </td>
                                     <td><?= date('d/m/Y H:i', strtotime($client['created_at'])) ?></td>
                                     <td class="actions-cell">
+                                        <!-- Affichage du QR Code Smartphone -->
+                                        <button type="button" class="btn btn-sm btn-outline-success" onclick="showQrModal(<?= (int)$client['id'] ?>, '<?= htmlspecialchars(addslashes($client['name']), ENT_QUOTES, 'UTF-8') ?>', '<?= htmlspecialchars($client['ip_address'], ENT_QUOTES, 'UTF-8') ?>')" title="Afficher le QR Code pour Smartphone">
+                                            📱 QR
+                                        </button>
+
                                         <!-- Téléchargement individuel -->
                                         <button type="submit" name="single_client_id" value="<?= (int)$client['id'] ?>" class="btn btn-sm btn-outline-primary" title="Télécharger le fichier .conf">
                                             📥 .conf
@@ -145,7 +187,7 @@ $max_clients = 253; // 10.0.0.2 à 10.0.0.254
 
                                         <!-- Suppression sécurisée par POST -->
                                         <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete(<?= (int)$client['id'] ?>, '<?= htmlspecialchars(addslashes($client['name']), ENT_QUOTES, 'UTF-8') ?>')" title="Supprimer ce client">
-                                            🗑️ Supprimer
+                                            🗑️
                                         </button>
                                     </td>
                                 </tr>
@@ -170,11 +212,43 @@ $max_clients = 253; // 10.0.0.2 à 10.0.0.254
         </section>
     </main>
 
+    <!-- Modale d'affichage du QR Code pour Smartphone -->
+    <div id="qrModal" class="modal-backdrop" style="display: none;" onclick="closeQrModal(event)">
+        <div class="modal-dialog" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h3 id="qrModalTitle">📱 QR Code WireGuard</h3>
+                <button type="button" class="btn-close" onclick="closeQrModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p class="modal-subtitle">Ouvrez l'application mobile <strong>WireGuard</strong> (iOS / Android) et scannez ce code :</p>
+                <div class="qr-container">
+                    <img id="qrImage" src="" alt="Génération du QR Code...">
+                </div>
+                <div class="qr-meta">
+                    <div class="qr-meta-item">
+                        <span class="meta-label">Adresse IP :</span>
+                        <span class="badge badge-ip" id="qrClientIp"></span>
+                    </div>
+                    <div class="qr-meta-item">
+                        <span class="meta-label">Endpoint :</span>
+                        <code><?= htmlspecialchars($wg_server_endpoint, ENT_QUOTES, 'UTF-8') ?></code>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeQrModal()">Fermer</button>
+                <button type="button" class="btn btn-primary" id="qrDownloadBtn">📥 Télécharger .conf</button>
+            </div>
+        </div>
+    </div>
+
     <footer class="app-footer">
-        <p>WireGuard Manager — Gestion sécurisée du serveur VPN</p>
+        <p>WireGuard Manager — Gestion et monitoring en temps réel du serveur VPN</p>
     </footer>
 
     <script>
+    const csrfToken = '<?= htmlspecialchars($csrf_token, ENT_QUOTES, 'UTF-8') ?>';
+
     // Sélection globale des cases à cocher
     const selectAll = document.getElementById("selectAll");
     if (selectAll) {
@@ -210,7 +284,7 @@ $max_clients = 253; // 10.0.0.2 à 10.0.0.254
         }
     }
 
-    // Copie de la clé publique avec feedback
+    // Copie de la clé publique avec feedback visuel
     function copyKey(key, button) {
         navigator.clipboard.writeText(key).then(() => {
             const originalText = button.innerHTML;
@@ -222,6 +296,40 @@ $max_clients = 253; // 10.0.0.2 à 10.0.0.254
             alert("Impossible de copier la clé : " + err);
         });
     }
+
+    // Gestion de la modale QR Code
+    function showQrModal(id, name, ip) {
+        document.getElementById('qrModalTitle').innerText = '📱 ' + name;
+        document.getElementById('qrClientIp').innerText = ip;
+        document.getElementById('qrImage').src = 'qrcode.php?id=' + encodeURIComponent(id) + '&csrf_token=' + encodeURIComponent(csrfToken);
+        
+        document.getElementById('qrDownloadBtn').onclick = function() {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = 'export_wg_clients.php';
+            form.innerHTML = '<input type="hidden" name="csrf_token" value="' + csrfToken + '">' +
+                             '<input type="hidden" name="single_client_id" value="' + id + '">';
+            document.body.appendChild(form);
+            form.submit();
+        };
+
+        const modal = document.getElementById('qrModal');
+        modal.style.display = 'flex';
+    }
+
+    function closeQrModal(event) {
+        if (!event || event.target.id === 'qrModal' || event.target.classList.contains('btn-close') || event.target.classList.contains('btn-secondary')) {
+            const modal = document.getElementById('qrModal');
+            modal.style.display = 'none';
+            document.getElementById('qrImage').src = '';
+        }
+    }
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeQrModal();
+        }
+    });
     </script>
 </body>
 </html>

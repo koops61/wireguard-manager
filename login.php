@@ -96,7 +96,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <div class="login-header">
         <div class="logo-badge">🛡️</div>
         <h2>WireGuard Manager</h2>
-        <p class="subtitle">Espace d'administration sécurisé</p>
+        <p class="subtitle">Espace d'administration sécurisé · v1.3</p>
     </div>
 
     <?php if ($error): ?>

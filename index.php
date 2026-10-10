@@ -36,6 +36,7 @@ foreach ($clients as $c) {
             <div class="brand">
                 <span class="brand-icon">🛡️</span>
                 <h1>WireGuard Manager</h1>
+                <span class="badge badge-version">v<?= htmlspecialchars(APP_VERSION, ENT_QUOTES, 'UTF-8') ?></span>
                 <span class="badge badge-info"><?= $total_clients ?> / <?= $max_clients ?> clients</span>
                 <span class="badge badge-success">🟢 <?= $online_count ?> en ligne</span>
             </div>
@@ -243,7 +244,7 @@ foreach ($clients as $c) {
     </div>
 
     <footer class="app-footer">
-        <p>WireGuard Manager — Gestion et monitoring en temps réel du serveur VPN</p>
+        <p>WireGuard Manager v<?= htmlspecialchars(APP_VERSION, ENT_QUOTES, 'UTF-8') ?> — Gestion et monitoring en temps réel du serveur VPN</p>
     </footer>
 
     <script>

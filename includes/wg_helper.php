@@ -3,6 +3,10 @@
  * Fonctions utilitaires pour WireGuard Manager
  */
 
+if (!defined('APP_VERSION')) {
+    define('APP_VERSION', '1.3');
+}
+
 /**
  * Génère le contenu d'un fichier .conf pour un client WireGuard
  */
